@@ -10,6 +10,31 @@ export default function Update() {
   const [title, setTitle] = useState('');
   const [method, setMethod] = useState('');
   const [rating, setRating] = useState(0);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!title || !method || !rating) {
+      setFormError('Please fill in all the fields correctly.');
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('smoothies')
+      .update({ title, method, rating })
+      .eq('id', id);
+
+    if (error) {
+      console.log(error);
+      setFormError('Please fill in all the fields correctly.');
+    }
+
+    if (data) {
+      setFormError(null);
+      navigate('/');
+    }
+  };
 
   useEffect(() => {
     const fetchSmoothie = async () => {
@@ -34,7 +59,7 @@ export default function Update() {
 
   return (
     <div className="page create">
-      <form>
+      <form onSubmit={handleSubmit}>
         <label htmlFor="title">Title:</label>
         <input
           type="text"
@@ -59,6 +84,8 @@ export default function Update() {
         />
 
         <button>Update Smoothie Recipe</button>
+
+        {formError && <p className="error">{formError}</p>}
       </form>
     </div>
   );
