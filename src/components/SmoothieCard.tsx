@@ -4,9 +4,10 @@ import { Smoothie } from '../page/Home';
 
 interface Props {
   smoothie: Smoothie;
+  onDelete: (id: number) => void;
 }
 
-export default function SmoothieCard({ smoothie }: Props) {
+export default function SmoothieCard({ smoothie, onDelete }: Props) {
   const handleDelete = async () => {
     const { data, error } = await supabase
       .from('smoothies')
@@ -18,6 +19,7 @@ export default function SmoothieCard({ smoothie }: Props) {
     }
     if (data) {
       console.log(data);
+      onDelete(smoothie.id);
     }
   };
 

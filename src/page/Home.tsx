@@ -6,6 +6,10 @@ export default function Home() {
   const [fetchError, setFetchError] = useState<string | null>('');
   const [smoothies, setSmoothies] = useState<Smoothie[]>([]);
 
+  const onDelete = (id: number) => {
+    setSmoothies((prev) => prev.filter((smoothie) => smoothie.id !== id));
+  };
+
   useEffect(() => {
     const fetchSmoothies = async () => {
       const { data, error } = await supabase
@@ -31,7 +35,11 @@ export default function Home() {
       <div className="smoothies">
         <div className="smoothie-grid">
           {smoothies?.map((smoothie) => (
-            <SmoothieCard smoothie={smoothie} key={smoothie.id} />
+            <SmoothieCard
+              smoothie={smoothie}
+              onDelete={onDelete}
+              key={smoothie.id}
+            />
           ))}
         </div>
       </div>
