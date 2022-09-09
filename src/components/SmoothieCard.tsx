@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import supabase from '../config/supabaseConfig';
 import { Smoothie } from '../page/Home';
 
 interface Props {
@@ -6,6 +7,20 @@ interface Props {
 }
 
 export default function SmoothieCard({ smoothie }: Props) {
+  const handleDelete = async () => {
+    const { data, error } = await supabase
+      .from('smoothies')
+      .delete()
+      .eq('id', smoothie.id);
+
+    if (error) {
+      console.log(error);
+    }
+    if (data) {
+      console.log(data);
+    }
+  };
+
   return (
     <div className="smoothie-card">
       <h3>{smoothie.title}</h3>
@@ -15,6 +30,9 @@ export default function SmoothieCard({ smoothie }: Props) {
         <Link to={`/${smoothie.id}`}>
           <i className="material-icons">edit</i>
         </Link>
+        <i className="material-icons" onClick={handleDelete}>
+          delete
+        </i>
       </div>
     </div>
   );
