@@ -1,20 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import SmoothieCard from '../components/SmoothieCard';
 import supabase from '../config/supabaseConfig';
+
+export type OrderType = 'created_at' | 'title' | 'rating';
 
 export default function Home() {
   const [fetchError, setFetchError] = useState<string | null>('');
   const [smoothies, setSmoothies] = useState<Smoothie[]>([]);
+  const [orderBy, setOrderBy] = useState<OrderType>('created_at');
 
-  const onDelete = (id: number) => {
+  const onDelete = useCallback((id: number) => {
     setSmoothies((prev) => prev.filter((smoothie) => smoothie.id !== id));
-  };
+  }, []);
 
   useEffect(() => {
     const fetchSmoothies = async () => {
       const { data, error } = await supabase
         .from<Smoothie>('smoothies')
-        .select();
+        .select()
+        .order(orderBy, { ascending: false });
 
       if (error) {
         setFetchError('Could not fetch the smoothies');
@@ -27,12 +31,18 @@ export default function Home() {
     };
 
     fetchSmoothies();
-  }, []);
+  }, [orderBy]);
 
   return (
     <div className="page home">
       {fetchError && <p>{fetchError}</p>}
       <div className="smoothies">
+        <div className="order-by">
+          <p>Order by:</p>
+          <button onClick={() => setOrderBy('created_at')}>Time Created</button>
+          <button onClick={() => setOrderBy('title')}>Title</button>
+          <button onClick={() => setOrderBy('rating')}>Rating</button>
+        </div>
         <div className="smoothie-grid">
           {smoothies?.map((smoothie) => (
             <SmoothieCard
